@@ -1,5 +1,5 @@
 import sys
-from socket import *
+from socket import 
 import _thread as thread
 
 host = '127.0.0.1'
