@@ -1,9 +1,8 @@
 from socket import *
-import _thread as thread
-import _thread
+import thread
 
-host = '127.0.0.1'              # Endereco IP do Servidor
-server_port = 5152            # Porta que o Servidor esta
+host = '127.0.0.1'
+server_port = 5152
 
 def conectado(con, cliente):
     print('Conectado por', cliente)

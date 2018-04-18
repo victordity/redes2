@@ -10,6 +10,6 @@ dest = (host, server_port)
 s.connect(dest)
 
 msg = ("Mensagem de teste")
-msgb = bytes(msg)
-s.send(msg)
+msgb = msg.encode('utf-8')
+s.send(msgb)
 s.close()
