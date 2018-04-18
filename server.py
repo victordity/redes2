@@ -1,27 +1,30 @@
-import sys
 from socket import *
 import _thread as thread
+import _thread
 
-host = '127.0.0.1'
-server_port = int(sys.argv[1])
+host = '127.0.0.1'              # Endereco IP do Servidor
+server_port = 5152            # Porta que o Servidor esta
 
-def conected(con, client):
-    print('Conectador por {}'.format(client))
+def conectado(con, cliente):
+    print('Conectado por', cliente)
 
-    msg = con.recv(1024)
-    print('O cliente {} enviou a menssagem {}'.format(client,msg))
-    print('Finalizando conexao do cliente {}'.format(client))
+    while True:
+        msg = con.recv(1024)
+        if not msg: break
+        print(cliente, msg)
+
+    print('Finalizando conexao do cliente', cliente)
     con.close()
     thread.exit()
 
 s = socket(AF_INET, SOCK_STREAM)
 
 orig = (host, server_port)
+
 s.bind(orig)
 s.listen(1)
-
+print("Esperando conexao")
 while True:
-    con, client = s.accept()
-    thread.start_new_thread(conected, tuple([con,client]))
-
+    con, cliente = s.accept()
+    thread.start_new_thread(conectado, tuple([con, cliente]))
 s.close()
