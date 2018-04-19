@@ -1,6 +1,12 @@
 from socket import *
 import thread
 
+def decode16(message):
+    decoded = message.decode("utf-8")
+    b = binascii.unhexlify(bytes(decoded, "utf-8"))
+    return b
+
+
 host = '127.0.0.1'
 server_port = 5152
 
@@ -9,8 +15,10 @@ def conectado(con, cliente):
 
     while True:
         msg = con.recv(1024)
+        decode16(msg)
         if not msg: break
         print(cliente, msg)
+
 
     print('Finalizando conexao do cliente', cliente)
     con.close()
