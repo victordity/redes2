@@ -1,11 +1,12 @@
 import binascii
 import socket
 import sys
+from typing import TextIO
 
 
 def getLine(arquivo):
-    entrada = open(arquivo, 'r')  # Atribuir utf-8 caso necessario
-    entrada.readline()
+    entrada = open(arquivo, 'r')  # type: TextIO # Atribuir utf-8 caso necessario
+    line = entrada.readline()
     return line
 
 
