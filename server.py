@@ -1,28 +1,37 @@
+import binascii
 from socket import *
 import thread
+import binascii
+import sys
+
 
 def decode16(message):
-    decoded = message.decode("utf-8")
-    b = binascii.unhexlify(bytes(decoded, "utf-8"))
+    # msg = message.encode("utf-8")
+    b = binascii.unhexlify(message)
     return b
 
 
 host = '127.0.0.1'
+
+# server_port = argv[1]
 server_port = 5152
+
 
 def conectado(con, cliente):
     print('Conectado por', cliente)
 
     while True:
         msg = con.recv(1024)
-        decode16(msg)
+        print('A mensagem recebida foi: {}'.format(msg))
+        msgValid = decode16(msg)
+        print('A mensagem descriptografada eh: {}'.format(msgValid))
         if not msg: break
         print(cliente, msg)
-
 
     print('Finalizando conexao do cliente', cliente)
     con.close()
     thread.exit()
+
 
 s = socket(AF_INET, SOCK_STREAM)
 
