@@ -4,6 +4,7 @@ import sys
 from typing import TextIO
 
 
+# Armazena o texto em uma variavel
 def getText(arquivo):
     entrada = open(arquivo, 'r')  # type: TextIO # Atribuir utf-8 caso necessario
     line = entrada.read()
@@ -11,13 +12,22 @@ def getText(arquivo):
     return line
 
 
+# Codifica a entrada para base16
 def encode16(message):
     msg = message.encode("utf-8")
     mb16 = binascii.hexlify(msg)
     return mb16
 
-def enquadramento(text, id):
-    pass
+
+# Retorna um vetor com um quadro em cada posicao
+def enquadramento(text):
+    quadros = []
+    sync = 'dcc023c2'
+    for i in range(0,len(text),2):
+        pass
+    
+    return quadros
+
 
 host = '127.0.0.1'
 
@@ -29,8 +39,9 @@ dest = (host, server_port)
 # s.connect(dest)
 
 # arquivo = sys.argv[2]
-arquivo = 'alice.txt'
-linha = getText(arquivo)
+arquivo = 'teste.txt'
+texto = getText(arquivo)
+quadros = enquadramento(texto)
 
 # msg = sys.argv[3]
 msg = 'ABC'
