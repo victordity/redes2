@@ -4,9 +4,10 @@ import sys
 from typing import TextIO
 
 
-def getLine(arquivo):
+def getText(arquivo):
     entrada = open(arquivo, 'r')  # type: TextIO # Atribuir utf-8 caso necessario
-    line = entrada.readline()
+    line = entrada.read()
+    tam = len(line)
     return line
 
 
@@ -15,6 +16,8 @@ def encode16(message):
     mb16 = binascii.hexlify(msg)
     return mb16
 
+def enquadramento(text, id):
+    pass
 
 host = '127.0.0.1'
 
@@ -26,8 +29,8 @@ dest = (host, server_port)
 # s.connect(dest)
 
 # arquivo = sys.argv[2]
-arquivo = 'teste.txt'
-linha = getLine(arquivo)
+arquivo = 'alice.txt'
+linha = getText(arquivo)
 
 # msg = sys.argv[3]
 msg = 'ABC'
