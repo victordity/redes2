@@ -1,23 +1,38 @@
-#from socket import *
+import binascii
+import socket
 import sys
+from typing import TextIO
+
+
+def getLine(arquivo):
+    entrada = open(arquivo, 'r')  # type: TextIO # Atribuir utf-8 caso necessario
+    line = entrada.readline()
+    return line
 
 
 def encode16(message):
-    encoded = binascii.hexlify(bytes(message, "utf-8"))
-    encoded = str(encoded).strip("b")
-    encoded = encoded.strip("")
-    return encoded
+    msg = message.encode("utf-8")
+    mb16 = binascii.hexlify(msg)
+    return mb16
 
 
 host = '127.0.0.1'
+
+# server_port = sys.argv[1]
 server_port = 5152
-# s = socket(AF_INET, SOCK_STREAM)
+
+# s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 dest = (host, server_port)
 # s.connect(dest)
 
-msg = ("Mensagem de teste")
+# arquivo = sys.argv[2]
+arquivo = 'teste.txt'
+linha = getLine(arquivo)
+
+# msg = sys.argv[3]
+msg = 'ABC'
+mb16 = encode16(msg)
 # msgb = msg.encode('utf-8')
-msgb16 = encode16(msg)
-print(msgb16)
-# s.send(msgb16)
+print('A mensagem a ser enviada eh: {}'.format(mb16))
+# s.send(mb16)
 # s.close()
