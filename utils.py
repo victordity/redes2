@@ -31,3 +31,29 @@ def checksum(data):
     # swap bytes
     result = result >> 8 | ((result & 0x00ff) << 8)
     return result
+
+
+
+#!/usr/bin
+#iFunção para criar maskara dos tamanho do quadro
+
+def maskLength():
+  #print(type(n))
+  n = 9999
+  str1 = '000'
+  str2 = '00'
+  str3 = '0'
+  if n < 10:
+    str1 = str1 + str(n)
+    print(str1)
+    
+  elif n < 100:
+      str2 = str2 + str(n)
+      print(str2)
+    
+  elif n < 1000:
+      str3 = str3 + str(n)
+      print(str3)
+    
+  else:
+      print(str(n))
