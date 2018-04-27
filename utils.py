@@ -2,9 +2,7 @@ import time as t
 
 
 class Timer:
-    '''
-    Classe para medir tempo 
-    '''
+    # Classe para medir tempo
     def __enter__(self):
         self.begin = t.time()
         return self
@@ -13,12 +11,8 @@ class Timer:
         self.duration = t.time() - self.begin
 
 
-
-
 def checksum(data):
-    '''
-    Retorna o cheksum de uma palavra
-    '''
+    # Retorna o cheksum de uma palavra
     sum = 0
     # lê 16 bits (2 WORDs)
     for i in range(0, len(data), 2):
@@ -33,27 +27,24 @@ def checksum(data):
     return result
 
 
+# !/usr/bin
+# iFunção para criar maskara dos tamanho do quadro
 
-#!/usr/bin
-#iFunção para criar maskara dos tamanho do quadro
+def maskLength(n):
+    str1 = '000'
+    str2 = '00'
+    str3 = '0'
+    if n < 10:
+        str1 = str1 + str(n)
+        return (str1)
 
-def maskLength():
-  #print(type(n))
-  n = 9999
-  str1 = '000'
-  str2 = '00'
-  str3 = '0'
-  if n < 10:
-    str1 = str1 + str(n)
-    print(str1)
-    
-  elif n < 100:
-      str2 = str2 + str(n)
-      print(str2)
-    
-  elif n < 1000:
-      str3 = str3 + str(n)
-      print(str3)
-    
-  else:
-      print(str(n))
+    elif n < 100:
+        str2 = str2 + str(n)
+        return (str2)
+
+    elif n < 1000:
+        str3 = str3 + str(n)
+        return (str3)
+
+    else:
+        return (str(n))

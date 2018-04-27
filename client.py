@@ -1,6 +1,7 @@
 import binascii
 import socket
 import sys
+import utils
 from typing import TextIO
 
 
@@ -20,13 +21,14 @@ def encode16(message):
 
 
 # Retorna um vetor com um quadro em cada posicao
-def enquadramento(text):
-    quadros = []
+def enquadramento(dado, idQuadro):
     sync = 'dcc023c2'
-    for i in range(0,len(text),2):
-        pass
-    
-    return quadros
+    checksum = utils.checksum(dado)
+    length = utils.maskLength(len(dado))
+    flags = 0
+    quadro = ('{}{}{}{}{}{}{}'.format(sync,sync,length,checksum,idQuadro,flags,dado))
+
+    return quadro
 
 
 host = '127.0.0.1'
@@ -38,10 +40,16 @@ server_port = 5152
 dest = (host, server_port)
 # s.connect(dest)
 
-# arquivo = sys.argv[2]
-arquivo = 'teste.txt'
-texto = getText(arquivo)
-quadros = enquadramento(texto)
+# arquivoArmazenado = sys.argv[2]
+arquivoArmazenado = 'teste.txt'
+arquivo = open(arquivoArmazenado, 'r')
+idQuadro = 1
+for line in arquivo:
+    if(idQuadro == 1):
+        idQuadro = 0
+    else:
+        idQuadro = 1
+    quadros = enquadramento(line, idQuadro)
 
 # msg = sys.argv[3]
 msg = 'ABC'
