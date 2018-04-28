@@ -1,19 +1,22 @@
 import sys
 
 
-def emuladorServer(SERVER_PORT,INPUT,OUTPUT)
+def emuladorServer(SERVER_PORT,INPUT,OUTPUT):
        # SERVER_PORT = argv[1]
-    s = socket(AF_INET, SOCK_STREAM)
     host = '127.0.0.1'
+    
+    s = socket(socket.AF_INET, socket.SOCK_STREAM,0)
+    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    s.bind((HOST, PORT))
     orig = (host, SERVER_PORT)
 
     s.bind(orig)
     s.listen(1)
     print("Esperando conexao")
     while True:
-    con, cliente = s.accept()
-    thread.start_new_thread(conectado, tuple([con, cliente]))
-    s.close()
+        con, cliente = s.accept()
+        thread.start_new_thread(conectado, tuple([con, cliente]))
+        s.close()
 
 
 def conectado(con, cliente):
@@ -41,12 +44,13 @@ def conectado(con, cliente):
     con.close()
     thread.exit()
 
+
 def emuladorClient(IP,SERVER_PORT,INPUT,OUTPUT):
 host = '127.0.0.1'
 
 # SERVER_PORT = sys.argv[1]
 
-# s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+# s = socket.socket(socket.AF_INET, socket.SOCK_STREAM,0)
 dest = (IP, SERVER_PORT)
 # s.connect(dest)
 # fileName = sys.argv[2]
@@ -58,8 +62,6 @@ mb16 = utils.encode16(msg)
 # msgb = msg.encode('utf-8')
 print('A mensagem a ser enviada eh: {}'.format(mb16))
 # s.close()
-
-
 
 
 flag = sys.argv[1];
