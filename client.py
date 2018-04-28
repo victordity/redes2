@@ -4,6 +4,8 @@ import sys
 import utils
 from typing import TextIO
 
+SYNC = 'dcc023c2';
+
 
 # Armazena o texto em uma variavel
 def getText(arquivo):
@@ -44,11 +46,8 @@ dest = (host, server_port)
 
 # arquivoArmazenado = sys.argv[2]
 arquivoArmazenado = 'teste.txt'
-<<<<<<< HEAD
 
 
-=======
->>>>>>> e63abbf12b4ee22bfc9ed64f2fc7e9b0aad07799
 quadros = enquadramento(arquivoArmazenado)
 
 # msg = sys.argv[3]
