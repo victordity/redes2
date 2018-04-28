@@ -1,5 +1,5 @@
 import time as t
-
+import binascii
 
 class Timer:
     # Classe para medir tempo
