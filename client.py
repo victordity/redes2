@@ -4,6 +4,8 @@ import sys
 import utils
 from typing import TextIO
 
+SYNC = 'dcc023c2';
+
 
 # Armazena o texto em uma variavel
 def getText(arquivo):
@@ -13,9 +15,9 @@ def getText(arquivo):
     return line
 
 # Retorna um vetor com um quadro em cada posicao
-def enquadramento(arquivoArmazenado):
+def enquadramento(fileName):
     sync = 'dcc023c2'
-    arquivo = open(arquivoArmazenado, 'r')
+    arquivo = open(fileName, 'r')
     idQuadro = '01'
     for line in arquivo:
         if (idQuadro == '01'):
@@ -42,10 +44,11 @@ server_port = 5152
 dest = (host, server_port)
 # s.connect(dest)
 
-# arquivoArmazenado = sys.argv[2]
-arquivoArmazenado = 'teste.txt'
 
-quadros = enquadramento(arquivoArmazenado)
+# fileName = sys.argv[2]
+fileName = 'teste.txt'
+quadros = enquadramento(fileName)
+
 
 # msg = sys.argv[3]
 msg = 'ABC'
