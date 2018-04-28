@@ -5,12 +5,6 @@ import binascii
 import sys
 
 
-def decode16(message):
-    # msg = message.encode("utf-8")
-    b = binascii.unhexlify(message)
-    return b
-
-
 host = '127.0.0.1'
 
 # server_port = argv[1]
@@ -23,7 +17,7 @@ def conectado(con, cliente):
     while True:
         msg = con.recv(1024)
         print('A mensagem recebida foi: {}'.format(msg))
-        msgValid = decode16(msg)
+        msgValid = utils.decode16(msg)
         print('A mensagem descriptografada eh: {}'.format(msgValid))
         if not msg: break
         print(cliente, msg)

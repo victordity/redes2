@@ -10,6 +10,16 @@ class Timer:
     def __exit__(self, *args):
         self.duration = t.time() - self.begin
 
+# Codifica a entrada para base16
+def encode16(message):
+    msg = message.encode("utf-8")
+    mb16 = binascii.hexlify(msg)
+    return mb16
+
+def decode16(message):
+    # msg = message.encode("utf-8")
+    b = binascii.unhexlify(message)
+    return b
 
 def checksum(data):
     # Retorna o cheksum de uma palavra

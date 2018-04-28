@@ -7,26 +7,28 @@ from typing import TextIO
 
 # Armazena o texto em uma variavel
 def getText(arquivo):
-    entrada = open(arquivo, 'r')  # type: TextIO # Atribuir utf-8 caso necessario
+    entrada = open(arquivo, 'r')
     line = entrada.read()
     tam = len(line)
     return line
 
-
-# Codifica a entrada para base16
-def encode16(message):
-    msg = message.encode("utf-8")
-    mb16 = binascii.hexlify(msg)
-    return mb16
-
-
 # Retorna um vetor com um quadro em cada posicao
-def enquadramento(dado, idQuadro):
+def enquadramento(arquivoArmazenado):
     sync = 'dcc023c2'
-    checksum = utils.checksum(dado)
-    length = utils.maskLength(len(dado))
-    flags = 0
-    quadro = ('{}{}{}{}{}{}{}'.format(sync,sync,length,checksum,idQuadro,flags,dado))
+    arquivo = open(arquivoArmazenado, 'r')
+    idQuadro = 1
+    for line in arquivo:
+        if (idQuadro == 1):
+            idQuadro = 0
+        else:
+            idQuadro = 1
+        checksum = utils.checksum(dado)
+        length = utils.maskLength(len(dado))
+        flags = 0
+        quadro = ('{}{}{}{}{}{}{}'.format(sync,sync,length,checksum,idQuadro,flags,dado))
+        # s.send(quadro)
+        # msg = con.recv(1024)
+
 
     return quadro
 
@@ -42,19 +44,14 @@ dest = (host, server_port)
 
 # arquivoArmazenado = sys.argv[2]
 arquivoArmazenado = 'teste.txt'
-arquivo = open(arquivoArmazenado, 'r')
-idQuadro = 1
-for line in arquivo:
-    if(idQuadro == 1):
-        idQuadro = 0
-    else:
-        idQuadro = 1
-    quadros = enquadramento(line, idQuadro)
+
+
+    quadros = enquadramento(arquivoArmazenado)
 
 # msg = sys.argv[3]
 msg = 'ABC'
-mb16 = encode16(msg)
+mb16 = utils.encode16(msg)
 # msgb = msg.encode('utf-8')
 print('A mensagem a ser enviada eh: {}'.format(mb16))
-# s.send(mb16)
+
 # s.close()
