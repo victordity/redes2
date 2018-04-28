@@ -22,10 +22,10 @@ def enquadramento(arquivoArmazenado):
             idQuadro = 0
         else:
             idQuadro = 1
-        checksum = utils.checksum(dado)
-        length = utils.maskLength(len(dado))
+        checksum = utils.checksum(line)
+        length = utils.maskLength(len(line))
         flags = 0
-        quadro = ('{}{}{}{}{}{}{}'.format(sync,sync,length,checksum,idQuadro,flags,dado))
+        quadro = ('{}{}{}{}{}{}{}'.format(sync,sync,length,checksum,idQuadro,flags,line))
         # s.send(quadro)
         # msg = con.recv(1024)
 
@@ -44,9 +44,7 @@ dest = (host, server_port)
 
 # arquivoArmazenado = sys.argv[2]
 arquivoArmazenado = 'teste.txt'
-
-
-    quadros = enquadramento(arquivoArmazenado)
+quadros = enquadramento(arquivoArmazenado)
 
 # msg = sys.argv[3]
 msg = 'ABC'
