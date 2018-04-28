@@ -16,15 +16,15 @@ def getText(arquivo):
 def enquadramento(arquivoArmazenado):
     sync = 'dcc023c2'
     arquivo = open(arquivoArmazenado, 'r')
-    idQuadro = 1
+    idQuadro = '01'
     for line in arquivo:
-        if (idQuadro == 1):
-            idQuadro = 0
+        if (idQuadro == '01'):
+            idQuadro = '00'
         else:
-            idQuadro = 1
+            idQuadro = '01'
         checksum = utils.checksum(line)
         length = utils.maskLength(len(line))
-        flags = 0
+        flags = '00'
         quadro = ('{}{}{}{}{}{}{}'.format(sync,sync,length,checksum,idQuadro,flags,line))
         # s.send(quadro)
         # msg = con.recv(1024)

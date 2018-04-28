@@ -3,6 +3,7 @@ from socket import *
 import thread
 import binascii
 import sys
+import utils
 
 
 host = '127.0.0.1'
@@ -24,7 +25,7 @@ def conectado(con, cliente):
             length = quadro[17:20]
             dado = quadro[(tamQuadro-length):tamQuadro]
             checksum = utils.checksum(dado)
-            
+
         else:
             pass
 
