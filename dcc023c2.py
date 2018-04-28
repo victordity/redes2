@@ -4,17 +4,18 @@ import sys
 def emuladorServer(SERVER_PORT,INPUT,OUTPUT):
        # SERVER_PORT = argv[1]
     host = '127.0.0.1'
-    
+
     s = socket(socket.AF_INET, socket.SOCK_STREAM,0)
     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    s.bind((HOST, PORT))
+    s.bind(HOST, PORT)
     orig = (host, SERVER_PORT)
 
-    s.bind(orig)
     s.listen(1)
     print("Esperando conexao")
     while True:
         con, cliente = s.accept()
+        # lock acquired by client
+        print_lock.acquire()
         thread.start_new_thread(conectado, tuple([con, cliente]))
         s.close()
 
