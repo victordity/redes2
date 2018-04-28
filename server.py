@@ -5,12 +5,10 @@ import binascii
 import sys
 import utils
 
-
 host = '127.0.0.1'
 
 # server_port = argv[1]
 server_port = 5152
-
 
 def conectado(con, cliente):
     print('Conectado por', cliente)
