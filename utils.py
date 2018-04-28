@@ -1,5 +1,6 @@
 import time as t
 import binascii
+import sys
 
 class Timer:
     # Classe para medir tempo
@@ -58,3 +59,12 @@ def maskLength(n):
 
     else:
         return (str(n))
+
+
+# ...
+# def emulador():
+#     flag = sys.argv[1];
+#     if( flag == 'c')
+#         client(s)
+#         else:
+#             servidor()
