@@ -37,6 +37,11 @@ def checksum(data):
     result = result >> 8 | ((result & 0x00ff) << 8)
     return result
 
+# Valida o Checksum aplicado
+def confirmChecksum(quadro):
+    check = checksum(quadro)
+
+    return True
 
 # !/usr/bin
 # iFunção para criar maskara dos tamanho do quadro
@@ -59,6 +64,13 @@ def maskLength(n):
 
     else:
         return (str(n))
+
+# Atribuio o componente ACK ao quadro pra ser enviado de volta ao cliente
+def ack(quadro):
+    tamQuadro = len(quadro)
+    length = int(quadro[17:20])
+    quadroACK = quadro[:(tamQuadro - (length + 2))] + '01' + quadro[(tamQuadro - length):]
+    return quadroACK
 
 
 # ...

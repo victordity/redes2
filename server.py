@@ -15,14 +15,16 @@ def conectado(con, cliente):
 
     while True:
         quadro16 = con.recv(1024)
-        quadro = utils.decode16(quadro16)
-        sync = 'dcc023c2dcc023c2'
+        quadro = (utils.decode16(quadro16)).decode()
         # Confirmar o sync
-        if (quadro[0:16] == sync):
-            tamQuadro = len(quadro)
-            length = quadro[17:20]
-            dado = quadro[(tamQuadro-length):tamQuadro]
-            checksum = utils.checksum(dado)
+        if(quadro[0:16] == sync):
+            if (utils.confirmChecksum(quadro)):
+                # Enviar um ACK
+
+            else:
+                # Ignora quadro
+
+
 
         else:
             pass
