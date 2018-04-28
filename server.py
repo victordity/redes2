@@ -10,19 +10,25 @@ host = '127.0.0.1'
 # server_port = argv[1]
 server_port = 5152
 
+def confirmChecksum(quadro):
+    check = checksum(quadro)
+
+    return True
+
 def conectado(con, cliente):
     print('Conectado por', cliente)
 
     while True:
         quadro16 = con.recv(1024)
-        quadro = utils.decode16(quadro16)
-        sync = 'dcc023c2dcc023c2'
-        # Confirmar o sync
-        if (quadro[0:16] == sync):
-            tamQuadro = len(quadro)
-            length = quadro[17:20]
-            dado = quadro[(tamQuadro-length):tamQuadro]
-            checksum = utils.checksum(dado)
+        quadro = (utils.decode16(quadro16)).decode()
+        # Conif (quafirmar o sync
+        if(quadro[0:16] == sync):
+            if (confirmChecksum(quadro)):
+                # Enviar um ACK
+            else:
+            # Ignora quadro
+
+
 
         else:
             pass

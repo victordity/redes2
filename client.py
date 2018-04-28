@@ -24,10 +24,12 @@ def enquadramento(fileName):
             idQuadro = '00'
         else:
             idQuadro = '01'
-        checksum = utils.checksum(line)
+
         length = utils.maskLength(len(line))
         flags = '00'
-        quadro = ('{}{}{}{}{}{}{}'.format(sync,sync,length,checksum,idQuadro,flags,line))
+        quadro = ('{}{}{}{}{}{}{}'.format(sync,sync,length,0,idQuadro,flags,line))
+        checksum = utils.checksum(quadro)
+        quadroCheck = ('{}{}{}{}{}{}{}'.format(sync,sync,length,checksum,idQuadro,flags,line))
         # s.send(quadro)
         # msg = con.recv(1024)
 
