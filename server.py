@@ -20,15 +20,13 @@ def conectado(con, cliente):
         if(quadro[0:16] == sync):
             if (utils.confirmChecksum(quadro)):
                 # Enviar um ACK
-
+                quadroACK = utils.ack(quadro)
+                con.send(quadroACK)
             else:
                 # Ignora quadro
-
-
-
+                con.send(None)
         else:
-            pass
-
+            con.send(None)
 
         if not msg: break
         print(cliente, msg)

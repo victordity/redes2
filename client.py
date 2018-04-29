@@ -15,26 +15,19 @@ def getText(arquivo):
     return line
 
 # Retorna um vetor com um quadro em cada posicao
-def enquadramento(fileName):
-    sync = 'dcc023c2'
-    arquivo = open(fileName, 'r')
-    idQuadro = '01'
-    for line in arquivo:
-        if (idQuadro == '01'):
-            idQuadro = '00'
-        else:
-            idQuadro = '01'
+def enquadramento(line, idQuadro, sync):
 
-        length = utils.maskLength(len(line))
-        flags = '00'
-        quadro = ('{}{}{}{}{}{}{}'.format(sync,sync,length,0,idQuadro,flags,line))
-        checksum = utils.checksum(quadro)
-        quadroCheck = ('{}{}{}{}{}{}{}'.format(sync,sync,length,checksum,idQuadro,flags,line))
-        # s.send(quadro)
-        # msg = con.recv(1024)
+    length = utils.maskLength(len(line))
+    flags = '00'
+    quadro = ('{}{}{}{}{}{}{}'.format(sync,sync,length,0,idQuadro,flags,line))
+    checksum = utils.checksum(quadro)
+    quadroCheck = ('{}{}{}{}{}{}{}'.format(sync,sync,length,checksum,idQuadro,flags,line))
+    # Envia o quadro e recebe o ACK
+    # s.send(quadroCheck)
+    # ACK = s.recv(1024)
 
 
-    return quadro
+    return quadroCheck
 
 
 host = '127.0.0.1'
@@ -49,13 +42,22 @@ dest = (host, server_port)
 
 # fileName = sys.argv[2]
 fileName = 'teste.txt'
-quadros = enquadramento(fileName)
 
-
-# msg = sys.argv[3]
-msg = 'ABC'
-mb16 = utils.encode16(msg)
-# msgb = msg.encode('utf-8')
-print('A mensagem a ser enviada eh: {}'.format(mb16))
+# Pegar linha a linha e enquadrar
+sync = 'dcc023c2'
+arquivo = open(fileName, 'r')
+idQuadro = '01'
+for line in arquivo:
+    if (idQuadro == '01'):
+        idQuadro = '00'
+    else:
+        idQuadro = '01'
+    # Enquadra
+    quadro = enquadramento(line, idQuadro, sync)
+    # Codifica e envia para o servidor
+    quadro16 = utils.encode16(quadro)
+    s.send(quadro16)
+    # Recebe o ACK depois que o tempo passar
+    ACK = s.recv(1024)
 
 # s.close()
