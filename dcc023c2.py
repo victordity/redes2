@@ -12,7 +12,6 @@ def emuladorServer(SERVER_PORT,INPUT,OUTPUT):
     PORT = 5000
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM,0)
     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    PORT = int(SERVER_PORT)
     s.bind((HOST, PORT))
   
 
@@ -25,11 +24,11 @@ def emuladorServer(SERVER_PORT,INPUT,OUTPUT):
         # lock acquired by client
         #print_lock.acquire()
         start_new_thread(conectado,(con,))
-        s.close()
+    s.close()
 
 
 def conectado(con):
-    print('Conectado por')
+    print('Conectado por',con)
 
     # while True:
     #     quadro16 = con.recv(1024)
@@ -64,7 +63,6 @@ def emuladorClient(IP,SERVER_PORT,INPUT,OUTPUT):
     
     SERVER = 5000
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM,0)
-    dest = (IP, SERVER_PORT)
     s.connect((host,SERVER))
     message = 'my pistol'
     
