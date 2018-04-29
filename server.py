@@ -1,12 +1,11 @@
 import binascii
 from socket import *
-import thread
+import _thread
 import binascii
 import sys
 import utils
 
 host = '127.0.0.1'
-
 # server_port = argv[1]
 server_port = 5152
 
@@ -32,7 +31,7 @@ def conectado(con, cliente):
 
     print('Finalizando conexao do cliente', cliente)
     con.close()
-    thread.exit()
+    _threa.exit()
 
 s = socket(AF_INET, SOCK_STREAM)
 
@@ -43,5 +42,5 @@ s.listen(1)
 print("Esperando conexao")
 while True:
     con, cliente = s.accept()
-    thread.start_new_thread(conectado, tuple([con, cliente]))
+    _thread.start_new_thread(conectado, tuple([con, cliente]))
 s.close()

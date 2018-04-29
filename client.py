@@ -54,10 +54,14 @@ for line in arquivo:
         idQuadro = '01'
     # Enquadra
     quadro = enquadramento(line, idQuadro, sync)
+    a = len(quadro)
     # Codifica e envia para o servidor
     quadro16 = utils.encode16(quadro)
+    b = len(quadro16)
     s.send(quadro16)
     # Recebe o ACK depois que o tempo passar
-    ACK = s.recv(1024)
+    while():
+        quadroACK = s.recv(1024)
+        ack = ackSolo(quadroACK)
 
 # s.close()

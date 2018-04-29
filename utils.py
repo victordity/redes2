@@ -72,7 +72,11 @@ def ack(quadro):
     quadroACK = quadro[:(tamQuadro - (length + 2))] + '01' + quadro[(tamQuadro - length):]
     return quadroACK
 
-
+def ackSolo(quadro):
+    tamQuadro = len(quadro)
+    length = int(quadro[17:20])
+    ack = quadro[(tamQuadro - (length + 2)):(tamQuadro - length)]
+    return ack
 # ...
 # def emulador():
 #     flag = sys.argv[1];
