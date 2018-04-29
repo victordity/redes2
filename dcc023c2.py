@@ -70,7 +70,7 @@ def emuladorClient(IP, SERVER_PORT, INPUT, OUTPUT):
 
     SERVER = 5000
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
-    s.settimeout(2)  # dse detectado demora na resposta timeout
+    s.settimeout(3)  # dse detectado demora na resposta timeout
     s.connect((host, SERVER))
     message = input("\nInsira sua mensagem ->")
 
@@ -94,11 +94,37 @@ def emuladorClient(IP, SERVER_PORT, INPUT, OUTPUT):
 # print('A mensagem a ser enviada eh: {}'.format(mb16))
 # s.close()
 
+def enquadramento(line, idQuadro, sync):
 
-flag = sys.argv[1]
-if flag == '-s':
-    emuladorServer(sys.argv[2], sys.argv[3], sys.argv[4])
+    length = utils.maskLength(len(line))
+    flags = '00'
+    quadro = ('{}{}{}{}{}{}{}'.format(sync,sync,length,0,idQuadro,flags,line))
+    checksum = utils.checksum(quadro)
+    quadroCheck = ('{}{}{}{}{}{}{}'.format(sync,sync,length,checksum,idQuadro,flags,line))
+    # Envia o quadro e recebe o ACK
+    # s.send(quadroCheck)
+    # ACK = s.recv(1024)
 
-else:
-    emuladorClient(sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
-# python dcc023c2.py -s 5000 in out
+    return quadroCheck
+
+
+def getText(arquivo):
+
+    entrada = open(arquivo, 'r')
+    line = entrada.read()
+    tam = len(line)
+    return line
+
+
+def main():
+    flag = sys.argv[1]
+    if flag == '-s':
+        emuladorServer(sys.argv[2], sys.argv[3], sys.argv[4])
+
+    else:
+        emuladorClient(sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
+    # python dcc023c2.py -s 5000 in out
+
+
+if __name__ == '__main__':
+    Main()
