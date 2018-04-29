@@ -1,30 +1,35 @@
 import sys
 import socket
+import threading as thread
+from _thread import *
+
+print_lock =  thread.Lock()
 
 
 def emuladorServer(SERVER_PORT,INPUT,OUTPUT):
        # SERVER_PORT = argv[1]
     HOST = '127.0.0.1'
-
+    PORT = 5000
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM,0)
     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     PORT = int(SERVER_PORT)
-    orig = (HOST, PORT)
     s.bind((HOST, PORT))
   
 
-    s.listen(10)
+    s.listen(5)
     print("Esperando conexao")
     while True:
         con, cliente = s.accept()
-        # lock acquired by client
         print_lock.acquire()
-        thread.start_new_thread(conectado, tuple([con, cliente]))
+        print('conected to :', cliente[0], ':',cliente[1])
+        # lock acquired by client
+        #print_lock.acquire()
+        start_new_thread(conectado,(con,))
         s.close()
 
 
-def conectado(con, cliente):
-    print('Conectado por', cliente)
+def conectado(con):
+    print('Conectado por')
 
     # while True:
     #     quadro16 = con.recv(1024)
@@ -50,15 +55,14 @@ def conectado(con, cliente):
     msg = 'Recebi: ' + data
     con.send(msg)
     print(data)
-    print('Finalizando conexao do cliente', cliente)
+    # print('Finalizando conexao do cliente', cliente)
     con.close()
-    thread.exit()
 
 
 def emuladorClient(IP,SERVER_PORT,INPUT,OUTPUT):
     host = '127.0.0.1'
-
-    SERVER = int(SERVER_PORT)
+    
+    SERVER = 5000
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM,0)
     dest = (IP, SERVER_PORT)
     s.connect((host,SERVER))
@@ -68,7 +72,7 @@ def emuladorClient(IP,SERVER_PORT,INPUT,OUTPUT):
         s.send(message.encode('ascii'))
 
         msg = s.recv(1024) 
-        print('Recebido:',data.decode(ascii))
+        print('Recebido:',msg.decode(ascii))
         ans = input('\n Quer continuar?')
         if ans == 'y':
             continue
