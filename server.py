@@ -23,12 +23,9 @@ def conectado(con, cliente):
 
                 else:
                 # Ignora quadro
-
-
-
+                con.send(None)
         else:
-            pass
-
+            con.send(None)
 
         if not msg: break
         print(cliente, msg)

@@ -24,7 +24,7 @@ def emuladorServer(SERVER_PORT,INPUT,OUTPUT):
         print('conected to :', cliente[0], ':',cliente[1])
         # lock acquired by client
         #print_lock.acquire()
-        thread._start_new_thread(conectado,(con,))
+        start_new_thread(conectado,(con,))
         s.close()
 
 
