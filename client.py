@@ -32,7 +32,7 @@ def enquadramento(line, idQuadro, sync):
 
 host = '127.0.0.1'
 # server_port = sys.argv[1]
-server_port = 5152
+server_port = 5000
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 dest = (host, server_port)

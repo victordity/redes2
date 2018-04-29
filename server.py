@@ -5,6 +5,7 @@ import binascii
 import sys
 import utils
 
+
 def conectado(con, cliente):
     print('Conectado por', cliente)
 
