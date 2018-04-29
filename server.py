@@ -21,7 +21,7 @@ def conectado(con, cliente):
             if (utils.confirmChecksum(quadro)):
                 # Enviar um ACK
 
-            else:
+                else:
                 # Ignora quadro
 
 
