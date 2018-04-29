@@ -31,13 +31,12 @@ def enquadramento(line, idQuadro, sync):
 
 
 host = '127.0.0.1'
-
 # server_port = sys.argv[1]
 server_port = 5152
 
-# s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 dest = (host, server_port)
-# s.connect(dest)
+s.connect(dest)
 
 
 # fileName = sys.argv[2]
@@ -54,14 +53,11 @@ for line in arquivo:
         idQuadro = '01'
     # Enquadra
     quadro = enquadramento(line, idQuadro, sync)
-    a = len(quadro)
     # Codifica e envia para o servidor
     quadro16 = utils.encode16(quadro)
-    b = len(quadro16)
     s.send(quadro16)
     # Recebe o ACK depois que o tempo passar
-    while():
-        quadroACK = s.recv(1024)
-        ack = ackSolo(quadroACK)
+    quadroACK = s.recv(1024)
+    ack = ackSolo(quadroACK)
 
 # s.close()
