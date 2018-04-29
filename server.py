@@ -32,7 +32,7 @@ def conectado(con, cliente):
 
     print('Finalizando conexao do cliente', cliente)
     con.close()
-    thread.exit()
+    _threa.exit()
 
 s = socket(AF_INET, SOCK_STREAM)
 
@@ -43,5 +43,5 @@ s.listen(1)
 print("Esperando conexao")
 while True:
     con, cliente = s.accept()
-    thread.start_new_thread(conectado, tuple([con, cliente]))
+    _thread.start_new_thread(conectado, tuple([con, cliente]))
 s.close()
