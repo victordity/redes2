@@ -1,5 +1,5 @@
-import sys
 import socket
+import sys
 import threading as thread
 from _thread import *
 
@@ -8,7 +8,9 @@ print_lock = thread.Lock()
 
 def emuladorServer(SERVER_PORT, INPUT, OUTPUT):
     # SERVER_PORT = argv[1]
-    HOST = '127.0.0.1'
+
+    # HOST = '127.0.0.1'
+    HOST = socket.gethostbyname(socket.getfqdn())
     PORT = 5000
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
@@ -27,12 +29,13 @@ def emuladorServer(SERVER_PORT, INPUT, OUTPUT):
         print_lock.acquire()
         print('\nConectado a :', cliente[0], ':', cliente[1])
         # Começa nova thread
-        start_new_thread(conectado, (con,cliente))
+        start_new_thread(conectado, (con, cliente))
     s.close()
 
 
-def conectado(con,cliente):
+def conectado(con, cliente):
     print('Conectado por', con)
+
 
     # while True:
     #     quadro16 = con.recv(1024)
@@ -44,7 +47,6 @@ def conectado(con,cliente):
     #         length = quadro[17:20]
     #         dado = quadro[(tamQuadro-length):tamQuadro]
     #         checksum = utils.checksum(dado)
-
     #     else:
     #         pass
 
@@ -65,10 +67,8 @@ def conectado(con,cliente):
     con.close()
 
 
-def emuladorClient(IP, SERVER_PORT, INPUT, OUTPUT):
-    host = '127.0.0.1'
+def emuladorClient(host, SERVER, INPUT, OUTPUT):
 
-    SERVER = 5000
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
     s.settimeout(1)  # dse detectado demora na resposta timeout
     s.connect((host, SERVER))
@@ -86,29 +86,39 @@ def emuladorClient(IP, SERVER_PORT, INPUT, OUTPUT):
 
     while not ack:
         try:
-            ack,addr = s.recvfrom(1024)
+            ack, addr = s.recvfrom(1024)
         except socket.timeout:
             s.send(message)
     print(ack)
     s.close()
 
-# fileName = sys.argv[2]
-# fileName = 'teste.txt'
-# quadros = enquadramento(fileName)
-# msg = sys.argv[3]
-# msg = 'ABC'
-# mb16 = utils.encode16(msg)
-# msgb = msg.encode('utf-8')
-# print('A mensagem a ser enviada eh: {}'.format(mb16))
-# s.close()
+
+def maskLength(n):
+    str1 = '000'
+    str2 = '00'
+    str3 = '0'
+    if n < 10:
+        str1 = str1 + str(n)
+        return (str1)
+
+    elif n < 100:
+        str2 = str2 + str(n)
+        return (str2)
+
+    elif n < 1000:
+        str3 = str3 + str(n)
+        return (str3)
+    else:
+        return (str(n))
+
 
 def enquadramento(line, idQuadro, sync):
-
-    length = utils.maskLength(len(line))
+    length = maskLength(len(line))
+    length = socket.ntohl(length)
     flags = '00'
-    quadro = ('{}{}{}{}{}{}{}'.format(sync,sync,length,0,idQuadro,flags,line))
-    checksum = utils.checksum(quadro)
-    quadroCheck = ('{}{}{}{}{}{}{}'.format(sync,sync,length,checksum,idQuadro,flags,line))
+    quadro = ('{}{}{}{}{}{}{}'.format(sync, sync, length, 0, idQuadro, flags, line))
+    checksum = ichecksum(quadro)
+    quadroCheck = ('{}{}{}{}{}{}{}'.format(sync, sync, length, checksum, idQuadro, flags, line))
     # Envia o quadro e recebe o ACK
     # s.send(quadroCheck)
     # ACK = s.recv(1024)
@@ -117,12 +127,32 @@ def enquadramento(line, idQuadro, sync):
 
 
 def getText(arquivo):
-
     entrada = open(arquivo, 'r')
     line = entrada.read()
     tam = len(line)
     return line
 
+def ichecksum(data, sum=0):
+    """ Calcula o checksum da internet
+        junta cada 8 bits e retorna o valor do checksum
+    """
+    # make 16 bit words out of every two adjacent 8 bit words in the packet
+    # and add them up
+    for i in range(0, len(data), 2):
+        if i + 1 >= len(data):
+            sum += ord(data[i]) & 0xFF
+        else:
+            w = ((ord(data[i]) << 8) & 0xFF00) + (ord(data[i + 1]) & 0xFF)
+            sum += w
+
+    # take only 16 bits out of the 32 bit sum and add up the carries
+    while (sum >> 16) > 0:
+        sum = (sum & 0xFFFF) + (sum >> 16)
+
+    # one's complement the result
+    sum = ~sum
+
+    return sum & 0xFFFF
 
 def main():
     flag = sys.argv[1]
@@ -130,9 +160,8 @@ def main():
         emuladorServer(sys.argv[2], sys.argv[3], sys.argv[4])
 
     else:
-        emuladorClient(sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
-    # python dcc023c2.py -s 5000 in out
+        emuladorClient(sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])  # python dcc023c2.py -s 5000 in out
 
 
 if __name__ == '__main__':
-    Main()
+    main()
