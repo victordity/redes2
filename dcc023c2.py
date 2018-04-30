@@ -2,9 +2,11 @@ import socket
 import sys
 import threading as thread
 from _thread import *
+import binascii
 
 print_lock = thread.Lock()
 
+SYNC = 'dcc023c2'
 
 def emuladorServer(SERVER_PORT, INPUT, OUTPUT):
     # SERVER_PORT = argv[1]
@@ -34,7 +36,7 @@ def emuladorServer(SERVER_PORT, INPUT, OUTPUT):
 
 
 def conectado(con, cliente):
-    print('Conectado por', con)
+    print('Conectado por', con,cliente)
 
 
     # while True:
@@ -52,6 +54,7 @@ def conectado(con, cliente):
 
     #     if not msg: break
     #     print(cliente, msg)
+
     while True:
         data = con.recv(1024).decode()
         if not data:
@@ -70,25 +73,25 @@ def conectado(con, cliente):
 def emuladorClient(host, SERVER, INPUT, OUTPUT):
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
-    s.settimeout(1)  # dse detectado demora na resposta timeout
+    s.settimeout(1)  # tempo de esperar para o ACK
     s.connect((host, SERVER))
     message = input("hallo")
+    inputFile = open(INPUT, 'r')
+    dados = inputFile.read()
+    tam = len(dados)
+    criaQuadro(dados, '00')
 
-    # while message != 'q':
-    #     s.send(message.encode())
-    #
-    #     msg = s.recv(1024).decode()
-    #     print('\nRecebido:' + msg)
-    #
-    #     message = input("\nInsira sua mensagem ->")
-    # s.close()
     ack = False
-
+    print('Enviando Mensagem')
+    dadosCodificados = encode16(dados)
+    s.send(dadosCodificados)
     while not ack:
         try:
-            ack, addr = s.recvfrom(1024)
+            resposta, addr = s.recvfrom(1024)
+            #ack = getACK(resposta) #extrai o ACK
+            print("ACK recebido foi", ack)
         except socket.timeout:
-            s.send(message)
+            s.send(dadosCodificados)
     print(ack)
     s.close()
 
@@ -111,14 +114,22 @@ def maskLength(n):
     else:
         return (str(n))
 
+def encode16(message):
+    msg = message.encode("utf-8")
+    mb16 = binascii.hexlify(msg)
+    return mb16
 
-def enquadramento(line, idQuadro, sync):
+def decode16(message):
+    # msg = message.encode("utf-8")
+    b = binascii.unhexlify(message)
+    return b
+def criaQuadro(line, id):
     length = maskLength(len(line))
     length = socket.ntohl(length)
     flags = '00'
-    quadro = ('{}{}{}{}{}{}{}'.format(sync, sync, length, 0, idQuadro, flags, line))
+    quadro = ('{}{}{}{}{}{}{}'.format(SYNC, SYNC, length, 0, id, flags, line))
     checksum = ichecksum(quadro)
-    quadroCheck = ('{}{}{}{}{}{}{}'.format(sync, sync, length, checksum, idQuadro, flags, line))
+    quadroCheck = ('{}{}{}{}{}{}{}'.format(SYNC, SYNC, length, checksum, id, flags, line))
     # Envia o quadro e recebe o ACK
     # s.send(quadroCheck)
     # ACK = s.recv(1024)
