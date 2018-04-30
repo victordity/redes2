@@ -123,6 +123,7 @@ def decode16(message):
     # msg = message.encode("utf-8")
     b = binascii.unhexlify(message)
     return b
+
 def criaQuadro(line, id):
     length = maskLength(len(line))
     length = socket.ntohl(length)
