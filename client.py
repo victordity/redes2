@@ -4,7 +4,7 @@ import sys
 import utils
 from typing import TextIO
 
-SYNC = 'dcc023c2';
+SYNC = 'dcc023c2'
 
 
 # Armazena o texto em uma variavel

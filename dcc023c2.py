@@ -70,19 +70,27 @@ def emuladorClient(IP, SERVER_PORT, INPUT, OUTPUT):
 
     SERVER = 5000
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
-    s.settimeout(3)  # dse detectado demora na resposta timeout
+    s.settimeout(1)  # dse detectado demora na resposta timeout
     s.connect((host, SERVER))
-    message = input("\nInsira sua mensagem ->")
+    message = input("hallo")
 
-    while message != 'q':
-        s.send(message.encode())
+    # while message != 'q':
+    #     s.send(message.encode())
+    #
+    #     msg = s.recv(1024).decode()
+    #     print('\nRecebido:' + msg)
+    #
+    #     message = input("\nInsira sua mensagem ->")
+    # s.close()
+    ack = False
 
-        msg = s.recv(1024).decode()
-        print('\nRecebido:' + msg)
-
-        message = input("\nInsira sua mensagem ->")
+    while not ack:
+        try:
+            ack,addr = s.recvfrom(1024)
+        except socket.timeout:
+            s.send(message)
+    print(ack)
     s.close()
-
 
 # fileName = sys.argv[2]
 # fileName = 'teste.txt'
