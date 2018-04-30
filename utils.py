@@ -7,7 +7,8 @@ def getChecksum(quadro):
     tamQuadro = len(quadro)
     length = int(quadro[17:20])
     check = quadro[20:(tamQuadro - (length + 4))]
-    return check
+    newQuadro = (quadro[:20] + '0' + quadro[(tamQuadro - (length + 4)):])
+    return check, newQuadro
 
 class Timer:
     # Classe para medir tempo
