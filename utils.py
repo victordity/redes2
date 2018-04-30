@@ -2,6 +2,13 @@ import time as t
 import binascii
 import sys
 
+
+def getChecksum(quadro):
+    tamQuadro = len(quadro)
+    length = int(quadro[17:20])
+    check = quadro[20:(tamQuadro - (length + 4))]
+    return check
+
 class Timer:
     # Classe para medir tempo
     def __enter__(self):
