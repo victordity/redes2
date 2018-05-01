@@ -88,36 +88,37 @@ def emuladorClient(host, SERVER, INPUT, OUTPUT):
     inputFile = open(INPUT, 'r')
     dados = inputFile.read()
     # Pega o arquivo completo em um vetor onde cada posicao do vetor eh uma linha do texto
-    # dataQuadros = inputFile.readlines()
-    # numQuadros = len(dataQuadros)
+    dataQuadros = inputFile.readlines()
+    numQuadros = len(dataQuadros)
     tam = len(dados)
     id = '01'
 
     # Inicia loop para enviar todos os quadros while(tiver quadros)
     # Define id do quadro
-    if(id == '00'):
-        id = '01'
-    else:
-        id = '00'
-    # Cria o quadro no formato da especificacao
-    criaQuadro(dados, id)
-    # Pega o ack do quadro inicializado com 00 ps(getAck eh diferente de setAck)
-    ack = getAck(dados)
+    for i in range(numQuadros):
+        if(id == '00'):
+            id = '01'
+        else:
+            id = '00'
+        # Cria o quadro no formato da especificacao
+        quadro = criaQuadro(dados, id)
+        # Pega o ack do quadro inicializado com 00 ps(getAck eh diferente de setAck)
+        ack = getAck(dados)
 
-    print('Enviando Mensagem')
-    dadosCodificados = encode16(dados)
-    s.send(dadosCodificados)
-    # Ack chegou?
-    while ack != '01':
-        try:
-            resposta, addr = s.recvfrom(1024)
-            ack = getAck(resposta) #extrai o ACK
-            print("ACK recebido foi", ack)
-            if(ack == '01'):
-                # Envia o proximo quadro
-                pass
-        except socket.timeout:
-            s.send(dadosCodificados)
+        print('Enviando Mensagem')
+        dadosCodificados = encode16(dados)
+        s.send(dadosCodificados)
+        # Ack chegou?
+        while ack != '01':
+            try:
+                resposta, addr = s.recvfrom(1024)
+                ack = getAck(resposta) #extrai o ACK
+                print("ACK recebido foi", ack)
+                if(ack == '01'):
+                    # Envia o proximo quadro
+                    pass
+            except socket.timeout:
+                s.send(dadosCodificados)
     print(ack)
     s.close()
 
