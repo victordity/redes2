@@ -78,7 +78,7 @@ def conectado(con, cliente):
             pass
         con.send(data.encode())
         print(data.encode())
-     print('Finalizando conexao do cliente', cliente)
+    print('Finalizando conexao do cliente', cliente)
     con.close()
 
 
