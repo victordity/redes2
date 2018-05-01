@@ -87,6 +87,9 @@ def emuladorClient(host, SERVER, INPUT, OUTPUT):
     message = input("hallo")
     inputFile = open(INPUT, 'r')
     dados = inputFile.read()
+    # Pega o arquivo completo em um vetor onde cada posicao do vetor eh uma linha do texto
+    # dataQuadros = inputFile.readlines()
+    # numQuadros = len(dataQuadros)
     tam = len(dados)
     id = '01'
 
