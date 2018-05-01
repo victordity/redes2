@@ -52,7 +52,7 @@ def conectado(con, cliente):
 
         # data = str(data).upper()
         # Verifica se o sync bate
-        syncQuadro = getsync(data)
+        syncQuadro = getSync(data)
         if sync == syncQuadro:
             # Calcula o checksum do quadro
             sum, quadroSemChecksum = getChecksum(data)
@@ -167,11 +167,6 @@ def criaQuadro(line, id):
     # ACK = s.recv(1024)
 
     return quadroCheck
-
-
-def getSync(quadro):
-    sync = quadro[:16]
-    return sync
 
 
 def getText(arquivo):
