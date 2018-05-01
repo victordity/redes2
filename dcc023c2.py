@@ -62,6 +62,7 @@ def conectado(con, cliente):
                 # Verifica o id pra ver se nao eh quadro repetido
                 if id != idAnterior:
                     # Escreve no outpub
+
                     # Envia ack
                     quadroAck = setAck(data)
                     con.send(quadroAck)
@@ -89,37 +90,35 @@ def emuladorClient(host, SERVER, INPUT, OUTPUT):
     inputFile = open(INPUT, 'rb')
     dados = inputFile.read()
     # Pega o arquivo completo em um vetor onde cada posicao do vetor eh uma linha do texto
-    # dataQuadros = inputFile.readlines()
-    # numQuadros = len(dataQuadros)
+    data = inputFile.readlines()
+    numQuadros = len(data)
     tam = len(dados)
     id = '01'
 
     # Inicia loop para enviar todos os quadros while(tiver quadros)
     # Define id do quadro
-    if(id == '00'):
-        id = '01'
-    else:
-        id = '00'
-    # Cria o quadro no formato da especificacao
-    quadro = criaQuadro(dados, id)
-    # Pega o ack do quadro inicializado com 00 ps(getAck eh diferente de setAck)
-    ack = getAck(quadro)
+    for i in range(numQuadros):
+        if(id == '00'):
+            id = '01'
+        else:
+            id = '00'
+        # Cria o quadro no formato da especificacao
+        quadro = criaQuadro(data[i], id)
+        # Pega o ack do quadro inicializado com 00 ps(getAck eh diferente de setAck)
+        ack = getAck(quadro)
+        print('Enviando Mensagem')
+        dadosCodificados = encode16(quadro)
+        s.send(dadosCodificados)
+        # Ack chegou?
+        while ack != '01':
+            try:
+                resposta, addr = s.recvfrom(1024)
+                ack = getAck(resposta) #extrai o ACK
+                print("ACK recebido foi", ack)
+            except socket.timeout:
+                s.send(dadosCodificados)
 
-    print('Enviando Mensagem')
-    dadosCodificados = encode16(quadro)
-    s.send(dadosCodificados)
-    # Ack chegou?
-    while ack != '01':
-        try:
-            resposta, addr = s.recvfrom(1024)
-            ack = getAck(resposta) #extrai o ACK
-            print("ACK recebido foi", ack)
-            if ack == '01':
-                # Envia o proximo quadro
-                pass
-        except socket.timeout:
-            s.send(dadosCodificados)
-    print(ack)
+        print(ack)
     s.close()
 
 def getSync(quadro):
