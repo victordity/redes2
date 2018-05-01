@@ -20,7 +20,7 @@ def emuladorServer(SERVER_PORT, INPUT, OUTPUT):
         s.bind((HOST, PORT))
     except socket.error as error_message:
 
-        print("Error #%d: %s", error_message[0], error_message[1])
+        print("Error #%d: %s", error_message)
         sys.exit(-1)
 
     s.listen(5)
@@ -55,8 +55,8 @@ def conectado(con, cliente):
         syncQuadro = getsync(data)
         if sync == syncQuadro:
             # Calcula o checksum do quadro
-            sum,quandroSemChecksum = getChecksum(data)
-            checksum = ichecksum(quadroSemChecksum,sum)
+            sum, quadroSemChecksum = getChecksum(data)
+            checksum = ichecksum(quadroSemChecksum, sum)
             if checksum == 0:
                 id = getId(data)
                 # Verifica o id pra ver se nao eh quadro repetido
@@ -76,7 +76,7 @@ def conectado(con, cliente):
             pass
         con.send(data.encode())
         print(data.encode())
-     print('Finalizando conexao do cliente', cliente)
+    print('Finalizando conexao do cliente', cliente)
     con.close()
 
 
@@ -168,6 +168,11 @@ def criaQuadro(line, id):
     # ACK = s.recv(1024)
 
     return quadroCheck
+
+
+def getSync(quadro):
+    sync = quadro[:16]
+    return sync
 
 
 def getText(arquivo):
