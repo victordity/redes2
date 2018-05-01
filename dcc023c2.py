@@ -36,25 +36,10 @@ def emuladorServer(SERVER_PORT, INPUT, OUTPUT):
 
 
 def conectado(con, cliente):
+
     print('Conectado por', con,cliente)
 
-
-    # while True:
-    #     quadro16 = con.recv(1024)
-    #     quadro = utils.decode16(quadro16)
-    #     sync = 'dcc023c2dcc023c2'
-    #     # Confirmar o sync
-    #     if (quadro[0:16] == sync):
-    #         tamQuadro = len(quadro)
-    #         length = quadro[17:20]
-    #         dado = quadro[(tamQuadro-length):tamQuadro]
-    #         checksum = utils.checksum(dado)
-    #     else:
-    #         pass
-
-    #     if not msg: break
-    #     print(cliente, msg)
-
+    id_anterior = '00'
     while True:
         data = con.recv(1024).decode()
         if not data:
@@ -85,10 +70,10 @@ def emuladorClient(host, SERVER, INPUT, OUTPUT):
     print('Enviando Mensagem')
     dadosCodificados = encode16(dados)
     s.send(dadosCodificados)
-    while not ack:
+    while ack != '01':
         try:
             resposta, addr = s.recvfrom(1024)
-            #ack = getACK(resposta) #extrai o ACK
+            ack = getACK(resposta) #extrai o ACK
             print("ACK recebido foi", ack)
         except socket.timeout:
             s.send(dadosCodificados)
@@ -120,11 +105,13 @@ def encode16(message):
     return mb16
 
 def decode16(message):
+
     # msg = message.encode("utf-8")
     b = binascii.unhexlify(message)
     return b
 
 def criaQuadro(line, id):
+
     length = maskLength(len(line))
     length = socket.ntohl(length)
     flags = '00'
@@ -143,6 +130,7 @@ def getText(arquivo):
     line = entrada.read()
     tam = len(line)
     return line
+
 
 def ichecksum(data, sum=0):
     """ Calcula o checksum da internet
@@ -165,6 +153,20 @@ def ichecksum(data, sum=0):
     sum = ~sum
 
     return sum & 0xFFFF
+
+
+def getACK(quadro):
+    tamQuadro = len(quadro)
+    length = int(quadro[17:20])
+    quadroACK = quadro[:(tamQuadro - (length + 2))] + '01' + quadro[(tamQuadro - length):]
+    return quadroACK
+
+
+def getId(quadro):
+    length = int(quadro[16:20])
+    id = quadro[(len(quadro)-(length + 4)):(len(quadro)-(length + 2))]
+    return id
+
 
 def main():
     flag = sys.argv[1]
