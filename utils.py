@@ -85,6 +85,30 @@ def getAck(quadro):
     length = int(quadro[17:20])
     ack = quadro[(tamQuadro - (length + 2)):(tamQuadro - length)]
     return ack
+
+def getSync(quadro):
+    sync = quadro[:16]
+    return sync
+
+def getLength(quadro):
+    length = quadro[16:20]
+    return int(length)
+
+def getId(quadro):
+    length = int(quadro[16:20])
+    id = quadro[(len(quadro)-(length + 4)):(len(quadro)-(length + 2))]
+    return id
+
+def getFlag(quadro):
+    length = int(quadro[16:20])
+    flag = quadro[(len(quadro)-(length + 2)):(len(quadro)-(length))]
+    return flag
+
+def getData(quadro):
+    length = int(quadro[16:20])
+    data = quadro[(len(quadro)-(length)):]
+    return data
+
 # ...
 # def emulador():
 #     flag = sys.argv[1];
