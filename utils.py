@@ -74,7 +74,7 @@ def maskLength(n):
         return (str(n))
 
 # Atribuio o componente ACK ao quadro pra ser enviado de volta ao cliente
-def ack(quadro):
+def getACK(quadro):
     tamQuadro = len(quadro)
     length = int(quadro[17:20])
     quadroACK = quadro[:(tamQuadro - (length + 2))] + '01' + quadro[(tamQuadro - length):]
