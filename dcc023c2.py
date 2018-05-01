@@ -31,16 +31,20 @@ def emuladorServer(SERVER_PORT, INPUT, OUTPUT):
         print_lock.acquire()
         print('\nConectado a :', cliente[0], ':', cliente[1])
         # Começa nova thread
-        start_new_thread(conectado, (con, cliente))
+        start_new_thread(conectado, (con, OUTPUT))
     s.close()
 
 
-def conectado(con, cliente):
+def conectado(con, OUTPUT):
 
     # recebe sincronizacao
+    print("recebeu conexao")
     pkg = con.recv(2)
     pkg = decode16(pkg)
     epkg = b''
+    idAnterior = '01'
+    arquivoSaida = open(OUTPUT, 'wb')
+
     while pkg != epkg:
         epkg = pkg
         if pkg == b'd' or pkg == b'dc' or pkg == b'dcc' or pkg == b'dcc0' or pkg == b'dcc02' or pkg == b'dcc023' \
@@ -48,55 +52,56 @@ def conectado(con, cliente):
             or pkg == b'dcc023c2dcc' or pkg == b'dcc023c2dcc0' or pkg == b'dcc023c2dcc02' or pkg == b'dcc023c2dcc023' \
             or pkg == b'dcc023c2dcc023c':
             pkg_aux = con.recv(2)
-            pkg+=decode16(pkg_aux)
+            pkg+= decode16(pkg_aux)
 
-        elif  pkg == b'dcc023c2dcc023c2': #quadro esta alinhado - começa a recepçao
+        # quadro esta alinhado - começa a recepçao
+        elif pkg == b'dcc023c2dcc023c2':
+
             tam = con.recv(8)
-            tam = decode16(tam)
+            tam = decode16(tam).decode()
 
+            check = con.recv(10)
+            check = decode16(check).decode()
 
-    print('Conectado por', con, cliente)
-    sync = 'dcc023c2'
-    idAnterior = '01'
-    while True:
-        # Recebe o quadro
-        quadro = con.recv(1024).decode()
-        quadro = decode16(quadro)
-        if not quadro:
-            print('Bye')
-            print_lock.release()
-            break
-        print("\nRecebi do usuario " + str(quadro))
+            id = con.recv(4)
+            id = decode16(id).decode()
 
-        # data = str(data).upper()
-        # Verifica se o sync bate
-        syncQuadro = getSync(quadro)
-        if sync == syncQuadro:
-            # Calcula o checksum do quadro
-            sum, quadroSemChecksum = getChecksum(quadro)
-            checksum = ichecksum(quadroSemChecksum, sum)
+            flag = con.recv(4)
+            flag = decode16(flag).decode()
+
+            data = con.recv(int(tam)*2)
+            data = decode16(data).decode()
+
+            quadro = '{}{}{}{}{}{}'.format(pkg.decode(), tam, 0, id, flag, data)
+
+            checksum = ichecksum(quadro, int(check))
+          # print("\n O chesum e:::", checksum)
+
             if checksum == 0:
-                id = getId(quadro)
                 # Verifica o id pra ver se nao eh quadro repetido
+                quadroAck = setAck(quadro)
                 if id != idAnterior:
-                    idAnterior = getId(quadro)
+                    idAnterior = id
                     # Escreve no outpub
-
+                    arquivoSaida.write(data.encode())
                     # Envia ack
-                    quadroAck = setAck(quadro)
-                    con.send(quadroAck)
+                    print("\n\n", quadroAck)
+                    con.send(encode16(quadroAck))
+                    pkg = con.recv(2)
+                    pkg = decode16(pkg)
                 else:
-                    # Quadro enviado repetidamente, envia o ack para convirmalo
-                    quadroAck = setAck(quadro)
-                    con.send(quadroAck)
-            else:
-                pass
+                    # Quadro enviado repetidamente, envia o ack para confirmalo
+                    print(quadroAck)
+                    con.send(encode16(quadroAck))
+
+
         else:
-            # Quadro invalido
-            pass
-        con.send(quadro.encode())
-        print(quadro.encode())
-    print('Finalizando conexao do cliente', cliente)
+            pkg = con.recv(2)
+            pkg = decode16(pkg)
+            epkg = b''
+
+    print('Finalizando conexao do cliente')
+    arquivoSaida.close()
     con.close()
 
 
@@ -117,7 +122,7 @@ def emuladorClient(host, SERVER, INPUT, OUTPUT):
     # Inicia loop para enviar todos os quadros while(tiver quadros)
     # Define id do quadro
     for line in inputFile:
-        if(id == '00'):
+        if id == '00':
             id = '01'
         else:
             id = '00'
@@ -125,20 +130,22 @@ def emuladorClient(host, SERVER, INPUT, OUTPUT):
         quadro = criaQuadro(line.decode(), id)
         # Pega o ack do quadro inicializado com 00 ps(getAck eh diferente de setAck)
         ack = getAck(quadro)
-        print('Enviando Mensagem')
+        #print('Enviando Mensagem')
         dadosCodificados = encode16(quadro)
         s.send(dadosCodificados)
+        tam = len(dadosCodificados)
         # Ack chegou?
         s.settimeout(1)  # tempo de esperar para o ACK
         while ack != '01':
             try:
-                resposta, addr = s.recvfrom(1024)
-                ack = getAck(resposta) #extrai o ACK
-                print("ACK recebido foi", ack)
+                resposta, addr = s.recvfrom(tam)
+                print("\n\n", decode16(resposta).decode())
+                ack = getAck(decode16(resposta)).decode() #extrai o ACK
+                #print("ACK recebido foi", ack)
             except socket.timeout:
                 s.send(dadosCodificados)
 
-        print(ack)
+       #print(ack)
     s.close()
 
 def getSync(quadro):
@@ -171,7 +178,7 @@ def encode16(message):
 def decode16(message):
 
     #msg = message.encode("utf-8")
-    print(message)
+    #print(message)
     b = binascii.unhexlify(message)
     return b
 
@@ -185,6 +192,7 @@ def criaQuadro(line, id):
     quadro = ('{}{}{}{}{}{}{}'.format(SYNC, SYNC, length, 0, id, flags, line))
     checksum = ichecksum(quadro)
     quadroCheck = ('{}{}{}{}{}{}{}'.format(SYNC, SYNC, length, checksum, id, flags, line))
+    #print("O checksum [e esse aqui no cliente:", checksum)
     # Envia o quadro e recebe o ACK
     # s.send(quadroCheck)
     # ACK = s.recv(1024)
