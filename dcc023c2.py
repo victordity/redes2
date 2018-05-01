@@ -37,47 +37,46 @@ def emuladorServer(SERVER_PORT, INPUT, OUTPUT):
 
 def conectado(con, cliente):
 
-    print('Conectado por', con,cliente)
+    print('Conectado por', con, cliente)
     sync = 'dcc023c2'
-    id_anterior = '01'
+    idAnterior = '01'
     while True:
         # Recebe o quadro
-        data = con.recv(1024).decode()
-        if not data:
+        quadro = con.recv(1024).decode()
+        if not quadro:
             print('Bye')
             print_lock.release()
             break
-        print("\nRecebi do usuario " + str(data))
-
+        print("\nRecebi do usuario " + str(quadro))
 
         # data = str(data).upper()
         # Verifica se o sync bate
-        syncQuadro = getSync(data)
+        syncQuadro = getSync(quadro)
         if sync == syncQuadro:
             # Calcula o checksum do quadro
-            sum, quadroSemChecksum = getChecksum(data)
+            sum, quadroSemChecksum = getChecksum(quadro)
             checksum = ichecksum(quadroSemChecksum, sum)
             if checksum == 0:
-                id = getId(data)
+                id = getId(quadro)
                 # Verifica o id pra ver se nao eh quadro repetido
                 if id != idAnterior:
                     idAnterior = getId(quadro)
                     # Escreve no outpub
 
                     # Envia ack
-                    quadroAck = setAck(data)
+                    quadroAck = setAck(quadro)
                     con.send(quadroAck)
                 else:
                     # Quadro enviado repetidamente, envia o ack para convirmalo
-                    quadroAck = setAck(data)
+                    quadroAck = setAck(quadro)
                     con.send(quadroAck)
             else:
                 pass
         else:
             # Quadro invalido
             pass
-        con.send(data.encode())
-        print(data.encode())
+        con.send(quadro.encode())
+        print(quadro.encode())
     print('Finalizando conexao do cliente', cliente)
     con.close()
 
