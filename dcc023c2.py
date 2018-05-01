@@ -53,13 +53,14 @@ def conectado(con, cliente):
         # data = str(data).upper()
         # Verifica se o sync bate
         syncQuadro = getsync(data)
-        if (sync == syncQuadro):
+        if sync == syncQuadro:
             # Calcula o checksum do quadro
-            # checksum = ichecksum() Checksum bateu?
-            if(checksum == 0):
+            sum,quandroSemChecksum = getChecksum(data)
+            checksum = ichecksum(quadroSemChecksum,sum)
+            if checksum == 0:
                 id = getId(data)
                 # Verifica o id pra ver se nao eh quadro repetido
-                if(id != idAnterior):
+                if id != idAnterior:
                     # Escreve no outpub
                     # Envia ack
                     quadroAck = setAck(data)
@@ -75,7 +76,7 @@ def conectado(con, cliente):
             pass
         con.send(data.encode())
         print(data.encode())
-    # print('Finalizando conexao do cliente', cliente)
+     print('Finalizando conexao do cliente', cliente)
     con.close()
 
 
@@ -85,7 +86,7 @@ def emuladorClient(host, SERVER, INPUT, OUTPUT):
     s.settimeout(1)  # tempo de esperar para o ACK
     s.connect((host, SERVER))
     message = input("hallo")
-    inputFile = open(INPUT, 'r')
+    inputFile = open(INPUT, 'rb')
     dados = inputFile.read()
     # Pega o arquivo completo em um vetor onde cada posicao do vetor eh uma linha do texto
     # dataQuadros = inputFile.readlines()
@@ -100,12 +101,12 @@ def emuladorClient(host, SERVER, INPUT, OUTPUT):
     else:
         id = '00'
     # Cria o quadro no formato da especificacao
-    criaQuadro(dados, id)
+    quadro = criaQuadro(dados, id)
     # Pega o ack do quadro inicializado com 00 ps(getAck eh diferente de setAck)
-    ack = getAck(dados)
+    ack = getAck(quadro)
 
     print('Enviando Mensagem')
-    dadosCodificados = encode16(dados)
+    dadosCodificados = encode16(quadro)
     s.send(dadosCodificados)
     # Ack chegou?
     while ack != '01':
@@ -113,7 +114,7 @@ def emuladorClient(host, SERVER, INPUT, OUTPUT):
             resposta, addr = s.recvfrom(1024)
             ack = getAck(resposta) #extrai o ACK
             print("ACK recebido foi", ack)
-            if(ack == '01'):
+            if ack == '01':
                 # Envia o proximo quadro
                 pass
         except socket.timeout:
@@ -197,6 +198,13 @@ def ichecksum(data, sum=0):
     sum = ~sum
 
     return sum & 0xFFFF
+
+def getChecksum(quadro):
+    tamQuadro = len(quadro)
+    length = int(quadro[17:20])
+    check = quadro[20:(tamQuadro - (length + 4))]
+    newQuadro = (quadro[:20] + '0' + quadro[(tamQuadro - (length + 4)):])
+    return check, newQuadro
 
 
 def setAck(quadro):
