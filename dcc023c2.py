@@ -38,9 +38,10 @@ def emuladorServer(SERVER_PORT, INPUT, OUTPUT):
 def conectado(con, cliente):
 
     print('Conectado por', con,cliente)
-
-    id_anterior = '00'
+    sync = 'dcc023c2'
+    id_anterior = '01'
     while True:
+        # Recebe o quadro
         data = con.recv(1024).decode()
         if not data:
             print('Bye')
@@ -48,7 +49,30 @@ def conectado(con, cliente):
             break
         print("\nRecebi do usuario " + str(data))
 
-        data = str(data).upper()
+
+        # data = str(data).upper()
+        # Verifica se o sync bate
+        syncQuadro = getsync(data)
+        if (sync == syncQuadro):
+            # Calcula o checksum do quadro
+            # checksum = ichecksum() Checksum bateu?
+            if(checksum == 0):
+                id = getId(data)
+                # Verifica o id pra ver se nao eh quadro repetido
+                if(id != idAnterior):
+                    # Escreve no outpub
+                    # Envia ack
+                    quadroAck = setAck(data)
+                    con.send(quadroAck)
+                else:
+                    # Quadro enviado repetidamente, envia o ack para convirmalo
+                    quadroAck = setAck(data)
+                    con.send(quadroAck)
+            else:
+                pass
+        else:
+            # Quadro invalido
+            pass
         con.send(data.encode())
         print(data.encode())
     # print('Finalizando conexao do cliente', cliente)
@@ -64,22 +88,39 @@ def emuladorClient(host, SERVER, INPUT, OUTPUT):
     inputFile = open(INPUT, 'r')
     dados = inputFile.read()
     tam = len(dados)
-    criaQuadro(dados, '00')
+    id = '01'
 
-    ack = False
+    # Inicia loop para enviar todos os quadros while(tiver quadros)
+    # Define id do quadro
+    if(id == '00'):
+        id = '01'
+    else:
+        id = '00'
+    # Cria o quadro no formato da especificacao
+    criaQuadro(dados, id)
+    # Pega o ack do quadro inicializado com 00 ps(getAck eh diferente de setAck)
+    ack = getAck(dados)
+
     print('Enviando Mensagem')
     dadosCodificados = encode16(dados)
     s.send(dadosCodificados)
+    # Ack chegou?
     while ack != '01':
         try:
             resposta, addr = s.recvfrom(1024)
-            ack = getACK(resposta) #extrai o ACK
+            ack = getAck(resposta) #extrai o ACK
             print("ACK recebido foi", ack)
+            if(ack == '01'):
+                # Envia o proximo quadro
+                pass
         except socket.timeout:
             s.send(dadosCodificados)
     print(ack)
     s.close()
 
+def getSync(quadro):
+    sync = quadro[:16]
+    return sync
 
 def maskLength(n):
     str1 = '000'
@@ -155,12 +196,17 @@ def ichecksum(data, sum=0):
     return sum & 0xFFFF
 
 
-def getACK(quadro):
+def setAck(quadro):
     tamQuadro = len(quadro)
     length = int(quadro[17:20])
     quadroACK = quadro[:(tamQuadro - (length + 2))] + '01' + quadro[(tamQuadro - length):]
     return quadroACK
 
+def getAck(quadro):
+    tamQuadro = len(quadro)
+    length = int(quadro[17:20])
+    ack = quadro[(tamQuadro - (length + 2)):(tamQuadro - length)]
+    return ack
 
 def getId(quadro):
     length = int(quadro[16:20])
