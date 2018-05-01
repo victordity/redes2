@@ -61,6 +61,7 @@ def conectado(con, cliente):
                 id = getId(data)
                 # Verifica o id pra ver se nao eh quadro repetido
                 if id != idAnterior:
+                    idAnterior = getId(quadro)
                     # Escreve no outpub
 
                     # Envia ack
@@ -88,22 +89,22 @@ def emuladorClient(host, SERVER, INPUT, OUTPUT):
     s.connect((host, SERVER))
     message = input("hallo")
     inputFile = open(INPUT, 'rb')
-    dados = inputFile.read()
+    # dados = inputFile.read()
     # Pega o arquivo completo em um vetor onde cada posicao do vetor eh uma linha do texto
-    data = inputFile.readlines()
-    numQuadros = len(data)
-    tam = len(dados)
+    # data = inputFile.readlines()
+    # numQuadros = len(data)
+    # tam = len(dados)
     id = '01'
 
     # Inicia loop para enviar todos os quadros while(tiver quadros)
     # Define id do quadro
-    for i in range(numQuadros):
+    for line in inputFile:
         if(id == '00'):
             id = '01'
         else:
             id = '00'
         # Cria o quadro no formato da especificacao
-        quadro = criaQuadro(data[i], id)
+        quadro = criaQuadro(line, id)
         # Pega o ack do quadro inicializado com 00 ps(getAck eh diferente de setAck)
         ack = getAck(quadro)
         print('Enviando Mensagem')
