@@ -1,3 +1,4 @@
+import binascii
 
 SYNC = 'dcc023c2'
 
@@ -100,7 +101,6 @@ def setAck(quadro):
 
 def getAck(quadro):
     tamQuadro = len(quadro)
-    length = int(quadro[17:20])
     ack = quadro[(tamQuadro - 2):]
     return ack
 
@@ -113,6 +113,9 @@ def getId(quadro):
 
 inputFile = open('alice.txt', 'rb')
 id = '01'
+# numLines = inputFile.readlines()
+# print(len(numLines))
+i = 0
 for line in inputFile:
     if (id == '00'):
         id = '01'
@@ -123,3 +126,8 @@ for line in inputFile:
     # Pega o ack do quadro inicializado com 00 ps(getAck eh diferente de setAck)
     novoQuadro = setAck(quadro)
     ack = getAck(novoQuadro)
+    ack16 = encode16(ack)
+    ackClient = getAck(decode16(ack16)).decode()  # extrai o ACK
+    i = i+1
+    print('ACK: {} da linha: {}'.format(ackClient,i))
+    ack = '99'
