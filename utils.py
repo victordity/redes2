@@ -116,3 +116,8 @@ def getData(quadro):
 #         client(s)
 #         else:
 #             servidor()
+
+#
+
+
+
