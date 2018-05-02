@@ -76,20 +76,18 @@ def conectado(con, OUTPUT):
             if checksum == 0:
                 # Verifica o id pra ver se nao eh quadro repetido
                 quadroAck = setAck(quadro)
+                quadroAckEnc = encode16(quadroAck)
                 if id != idAnterior:
                     idAnterior = id
-                    # Escreve no outpub
+                    # Escreve no output
                     arquivoSaida.write(data.encode())
-                    # Envia ack
-                    #print("\n",quadroAck)
-                    con.send(encode16(quadroAck))
+                    # Envia quadro ACK
+                    con.send(quadroAckEnc)
                 else:
-                    # Quadro enviado repetidamente, envia o ack para confirmalo
-                    con.send(encode16(quadroAck))
+                    # Quadro enviado repetidamente, envia o ack para confirma-o
+                    con.send(quadroAckEnc)
             pkg = con.recv(2)
             pkg = decode16(pkg)
-
-
         else:
             pkg = con.recv(2)
             pkg = decode16(pkg)
@@ -128,9 +126,9 @@ def emuladorClient(host, SERVER, INPUT, OUTPUT):
         s.settimeout(1)  # tempo de esperar para o ACK
         while ack != '01':
             try:
-                resposta, addr = s.recvfrom(500)
-                #print(decode16(resposta))
+                resposta = s.recv(150)
                 ack = getAck(decode16(resposta)).decode() #extrai o ACK
+                print(ack)
             except socket.timeout:
                 s.send(dadosCodificados)
     s.close()
