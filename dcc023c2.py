@@ -10,13 +10,13 @@ SYNC = 'dcc023c2'
 
 def emuladorServer(SERVER_PORT, INPUT, OUTPUT):
 
-    HOST = socket.gethostbyname(socket.getfqdn())
+    # HOST = socket.gethostbyname(socket.getfqdn())
+    HOST = '127.0.0.1'
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         s.bind((HOST, int(SERVER_PORT)))
     except socket.error as error_message:
-
         print("Error #%d: %s", error_message)
         sys.exit(-1)
 
@@ -56,6 +56,7 @@ def conectado(con, OUTPUT):
 
             tam = con.recv(8)
             tam = decode16(tam).decode()
+
 
             check = con.recv(10)
             check = decode16(check).decode()
@@ -116,6 +117,7 @@ def emuladorClient(host, SERVER, INPUT, OUTPUT):
             id = '00'
         # Cria o quadro no formato da especificacao
         print(line)
+        # test = line.decode('ascii')
         quadro = criaQuadro(line.decode(), id)
         # Pega o ack do quadro inicializado com 00 ps(getAck eh diferente de setAck)
         ack = '00'
@@ -173,7 +175,8 @@ def criaQuadro(line, id):
     flags = '00'
     quadro = ('{}{}{}{}{}{}{}'.format(SYNC, SYNC, length, 0, id, flags, line))
     checksum = ichecksum(quadro)
-    quadroCheck = ('{}{}{}{}{}{}{}'.format(SYNC, SYNC, length, checksum, id, flags, line))
+    checksumVerificado = checkVerify(str(checksum))
+    quadroCheck = ('{}{}{}{}{}{}{}'.format(SYNC, SYNC, length, checksumVerificado, id, flags, line))
     #print("O checksum [e esse aqui no cliente:", checksum)
     # Envia o quadro e recebe o ACK
     # s.send(quadroCheck)
@@ -188,6 +191,20 @@ def getText(arquivo):
     tam = len(line)
     return line
 
+def checkVerify(check):
+    if len(check) == 4:
+        checkNorm = '0{}'.format(check)
+
+    elif len(check) == 3:
+        checkNorm = '00{}'.format(check)
+
+    elif len(check) == 2:
+        checkNorm = '000{}'.format(check)
+
+    else:
+        checkNorm = check
+
+    return checkNorm
 
 def ichecksum(data, sum=0):
     """ Calcula o checksum da internet
