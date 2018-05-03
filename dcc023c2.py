@@ -105,7 +105,7 @@ def emuladorClient(host, SERVER, INPUT, OUTPUT):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
     s.connect((host, SERVER))
     inputFile = open(INPUT, 'rb')
-
+    # inputFile = open(INPUT, encoding="utf8", errors='ignore')
     id = '01'
 
     # Inicia loop para enviar todos os quadros while(tiver quadros)
@@ -117,8 +117,9 @@ def emuladorClient(host, SERVER, INPUT, OUTPUT):
             id = '00'
         # Cria o quadro no formato da especificacao
         print(line)
-        # test = line.decode('ascii')
+
         quadro = criaQuadro(line.decode(), id)
+
         # Pega o ack do quadro inicializado com 00 ps(getAck eh diferente de setAck)
         ack = '00'
         dadosCodificados = encode16(quadro)
