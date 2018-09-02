@@ -1,0 +1,13 @@
+# depslib dependency file v1.0
+1535830182 source:/home/victorhg/Training/tp1/client.c
+	<stdlib.h>
+	<stdio.h>
+	<string.h>
+	<sys/socket.h>
+	<arpa/inet.h>
+	<netdb.h>
+
+1535806560 source:/home/victorhg/Training/tp1/main.c
+	<stdio.h>
+	<stdlib.h>
+

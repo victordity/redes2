@@ -1,0 +1,11 @@
+# depslib dependency file v1.0
+1535831055 source:/home/victorhg/Training/tp1/server/server.c
+	<stdlib.h>
+	<unistd.h>
+	<stdio.h>
+	<string.h>
+	<pthread.h>
+	<sys/socket.h>
+	<arpa/inet.h>
+	<netdb.h>
+
