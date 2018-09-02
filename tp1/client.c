@@ -65,8 +65,8 @@ int main(int argc, char *argv[])
         printf("Verificador fim do arquivo %c \n", buf[tam_buffer - 1]);
         tam = strlen(buf);
         // Escrever no arquivo destino
-        printf("Escrevendo a palavra %s de tamanho %d \n", buf, tam-1);
-        fwrite(&buf, sizeof(char), tam, fw);
+        printf("Escrevendo a palavra %s de tamanho %d \n", buf, (int)c);
+        fwrite(&buf, sizeof(char), (int)c, fw);
 
         // Verifica o final da transferencia
         verificador = buf[tam - 1];

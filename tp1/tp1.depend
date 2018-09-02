@@ -11,3 +11,11 @@
 	<stdio.h>
 	<stdlib.h>
 
+1535852702 source:/home/victorhg/Training/redes2/tp1/client.c
+	<stdlib.h>
+	<stdio.h>
+	<string.h>
+	<sys/socket.h>
+	<arpa/inet.h>
+	<netdb.h>
+

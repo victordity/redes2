@@ -1,4 +1,4 @@
 Arquivo
-Li@nha 1
-Linh@a 2
+Linha 1
+Linha 2
 0

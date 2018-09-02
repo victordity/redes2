@@ -9,3 +9,13 @@
 	<arpa/inet.h>
 	<netdb.h>
 
+1535852707 source:/home/victorhg/Training/redes2/tp1/server/server.c
+	<stdlib.h>
+	<unistd.h>
+	<stdio.h>
+	<string.h>
+	<pthread.h>
+	<sys/socket.h>
+	<arpa/inet.h>
+	<netdb.h>
+
