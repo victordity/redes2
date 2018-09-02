@@ -18,8 +18,9 @@ void logexit(const char *str)
 int main(int argc, char *argv[])
 {
 	char *host_do_servidor, *nome_arquivo;
-  int s, porto_do_servidor, len, i, tam_buffer;
+  int s, porto_do_servidor, len, i, tam_buffer, num_bytes = 0;
 
+    // Processa argumentos da linha de comando
 	host_do_servidor = argv[1];
 	porto_do_servidor = atoi(argv[2]);
 	nome_arquivo = argv[3];
@@ -49,42 +50,36 @@ int main(int argc, char *argv[])
 	count = send(s, nome_arquivo, strlen(nome_arquivo)+1, 0);
 	if(count != strlen(nome_arquivo)+1)
 		logexit("send");
+
     //Abre arquivo para escrita
     FILE *fw;
     fw = fopen(nome_arquivo, "w");
 
     // Recebe os dados do arquivo e escrev
     char buf[tam_buffer + 1];
-    printf("Iniciando leitura");
-    int tam;
+    int tam, flag = 0;
     char verificador;
-    while(1) {
+    while(flag == 0) {
         size_t c = recv(s, buf, tam_buffer, 0);
-        printf("recebemos %d bytes\n", (int)c);
-        puts(buf);
-        printf("Verificador fim do arquivo %c \n", buf[tam_buffer - 1]);
+        num_bytes += (int)c;
         tam = strlen(buf);
+
         // Escrever no arquivo destino
-        printf("Escrevendo a palavra %s de tamanho %d \n", buf, (int)c);
         fwrite(&buf, sizeof(char), (int)c, fw);
 
         // Verifica o final da transferencia
         verificador = buf[tam - 1];
         if (verificador == '0') {
-            return;
+            flag = 1;
         }
         memset(buf, 0, tam_buffer);
     }
-
+    // Fecha conexao e arquivo
+    fclose(fw);
+    close(s);
     // sudo iptables -A INPUT -p tcp --dport 5152 -j ACCEPT
 	memset(buf, 0, tam_buffer);
-	unsigned total = 0;
-	while(1) {
-		count = recv(s, buf+total, tam_buffer, 0);
-		if(count == 0) break;
-		total += count;
-	}
-
+	printf("\nProcessamos %d bytes", num_bytes);
 
     fflush(stdout);
     return 0;

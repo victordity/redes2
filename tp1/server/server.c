@@ -19,12 +19,11 @@ int main(int argc, char *argv[])
 {
 	int s, porto_do_servidor, tam_buffer;
 
+    // Processa argumentos da linha de comando
 	porto_do_servidor = atoi(argv[1]);
 	tam_buffer = atoi(argv[2]);
 
-    printf("Porta : %d\n", porto_do_servidor);
-    printf("Buffer: %d\n", tam_buffer);
-
+    // Faz abertura passiva e aguarda conexão
 	s = socket(AF_INET, SOCK_STREAM, 0);
 	if(s == -1) logexit("socket");
 
@@ -43,57 +42,55 @@ int main(int argc, char *argv[])
 	if(listen(s, 10)) logexit("listen");
 	printf("esperando conexao\n");
 
-    	while(1) {
-		struct sockaddr_in raddr;
-		struct sockaddr *raddrptr =
-			(struct sockaddr *)&raddr;
-		socklen_t rlen = sizeof(struct sockaddr_in);
+    while(1) {
+    struct sockaddr_in raddr;
+    struct sockaddr *raddrptr =
+        (struct sockaddr *)&raddr;
+    socklen_t rlen = sizeof(struct sockaddr_in);
 
-		int r = accept(s, raddrptr, &rlen);
-		if(r == -1) logexit("accept");
+    int r = accept(s, raddrptr, &rlen);
+    if(r == -1) logexit("accept");
 
-		char nome_arquivo[512];
-		char buf[tam_buffer];
-		char ipcliente[512];
-		inet_ntop(AF_INET, &(raddr.sin_addr),
-				ipcliente, 512);
+    char nome_arquivo[512];
+    char buf[tam_buffer];
+    char ipcliente[512];
+    inet_ntop(AF_INET, &(raddr.sin_addr),
+            ipcliente, 512);
 
-		printf("conexao de %s %d\n", ipcliente,
-				(int)ntohs(raddr.sin_port));
+    printf("conexao de %s %d\n", ipcliente,
+            (int)ntohs(raddr.sin_port));
 
-		size_t c = recv(r, nome_arquivo, 512, 0);
-		printf("recebemos %d bytes\n", (int)c);
-		puts(nome_arquivo);
+    // Recebe a String com nome do arquivo
+    size_t c = recv(r, nome_arquivo, 512, 0);
+    puts(nome_arquivo);
 
-		// Abrir o arquivo para leitura
-		FILE *fr;
-		fr =  fopen(nome_arquivo, "r");
-		if (fr == NULL ) {
-            printf("Erro ao abrir arquivo");
-            return;
-		}
-		int tam = 0;
-		char verificador;
-        while(1) {
-            fread(buf, sizeof(char), tam_buffer, fr);
-            printf("O conteudo que o Server leu foi %s \n", buf);
-            send(r, buf, strlen(buf)-1, 0);
-            printf("enviou %s \n", buf);
-            tam = strlen(buf);
-            printf("buf tamanho %d Verificador %c \n", tam, buf[tam-2]);
-            verificador = buf[tam-2];
-            printf("Condicional do verificador %c \n", verificador);
-            if (verificador == '0') {
-                break;
-            }
-            //if (feof(fr)) break;
-            memset(buf, 0, tam_buffer);
+    // Abrir o arquivo para leitura
+    FILE *fr;
+    fr =  fopen(nome_arquivo, "r");
+
+    // Se deu erro fecha a conexao e termina
+    if (fr == NULL ) {
+        printf("Erro ao abrir arquivo");
+        return;
+    }
+    int tam = 0;
+    char verificador;
+
+    // Le o arquivo 1 buffer de cada vez
+    while(1) {
+        fread(buf, sizeof(char), tam_buffer, fr);
+        send(r, buf, strlen(buf)-1, 0);
+        tam = strlen(buf);
+        verificador = buf[tam-2];
+        if (verificador == '0') {
+            break;
         }
-        fclose(fr);
-		printf("Acabou envio \n");
+        memset(buf, 0, tam_buffer);
+    }
+    fclose(fr);
 
-		close(r);
-	}
+    close(r);
+}
 
 	exit(EXIT_SUCCESS);
 
