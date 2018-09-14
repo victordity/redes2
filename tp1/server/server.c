@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <pthread.h>
+#include <sys/time.h>
 
 #include <sys/socket.h>
 #include <arpa/inet.h>
@@ -18,6 +19,10 @@ void logexit(const char *str)
 int main(int argc, char *argv[])
 {
 	int s, porto_do_servidor, tam_buffer;
+
+	int pid;
+    struct timeval tv1, tv2;
+    double t1, t2;
 
     // Processa argumentos da linha de comando
 	porto_do_servidor = atoi(argv[1]);
@@ -41,6 +46,11 @@ int main(int argc, char *argv[])
 
 	if(listen(s, 10)) logexit("listen");
 	printf("esperando conexao\n");
+
+
+
+
+
 
     while(1) {
     struct sockaddr_in raddr;
@@ -70,14 +80,17 @@ int main(int argc, char *argv[])
 
     // Se deu erro fecha a conexao e termina
     if (fr == NULL ) {
-        printf("Erro ao abrir arquivo");
-        return;
+        printf("Erro ao abrir arquivo \n");
+        return 0;
     }
     int tam = 0;
     char verificador;
 
+    //gettimeofday(&tv1, NULL);
+    //t1 = (double)(tv1.tv_sec) + (double)(tv1.tv_usec)/ 1000000.00;
     // Le o arquivo 1 buffer de cada vez
     while(1) {
+
         fread(buf, sizeof(char), tam_buffer, fr);
         send(r, buf, strlen(buf)-1, 0);
         tam = strlen(buf);
@@ -86,12 +99,17 @@ int main(int argc, char *argv[])
             break;
         }
         memset(buf, 0, tam_buffer);
+
     }
+
+    //gettimeofday(&tv2, NULL);
+    //t2 = (double)(tv2.tv_sec) + (double)(tv2.tv_usec)/ 1000000.00;
+    //printf("\nO tempo de execucao de foi: %lf\n",(t2 - t1));
+    fclose(fr);
+    close(r);
 
 }
     // Fecha a conexao e o arquivo
-    fclose(fr);
-    close(r);
 	exit(EXIT_SUCCESS);
 
 
