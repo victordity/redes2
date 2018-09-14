@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
     // Processa argumentos da linha de comando
 	porto_do_servidor = atoi(argv[1]);
 	tam_buffer = atoi(argv[2]);
-
+    // ./client 127.434.33 5000 arquivo 10
     // Faz abertura passiva e aguarda conexão
 	s = socket(AF_INET, SOCK_STREAM, 0);
 	if(s == -1) logexit("socket");
@@ -87,11 +87,11 @@ int main(int argc, char *argv[])
         }
         memset(buf, 0, tam_buffer);
     }
-    fclose(fr);
 
-    close(r);
 }
-
+    // Fecha a conexao e o arquivo
+    fclose(fr);
+    close(r);
 	exit(EXIT_SUCCESS);
 
 
