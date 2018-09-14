@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
     close(s);
     // sudo iptables -A INPUT -p tcp --dport 5152 -j ACCEPT
 	memset(buf, 0, tam_buffer);
-	printf("\nProcessamos %d bytes", num_bytes);
+	printf("\nBuffer = %d bytes", num_bytes);
 
     fflush(stdout);
     return 0;
