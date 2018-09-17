@@ -86,8 +86,8 @@ int main(int argc, char *argv[])
     int tam = 0;
     char verificador;
 
-    //gettimeofday(&tv1, NULL);
-    //t1 = (double)(tv1.tv_sec) + (double)(tv1.tv_usec)/ 1000000.00;
+    gettimeofday(&tv1, NULL);
+    t1 = (double)(tv1.tv_sec) + (double)(tv1.tv_usec)/ 1000000.00;
     // Le o arquivo 1 buffer de cada vez
     while(1) {
 
@@ -102,9 +102,9 @@ int main(int argc, char *argv[])
 
     }
 
-    //gettimeofday(&tv2, NULL);
-    //t2 = (double)(tv2.tv_sec) + (double)(tv2.tv_usec)/ 1000000.00;
-    //printf("\nO tempo de execucao de foi: %lf\n",(t2 - t1));
+    gettimeofday(&tv2, NULL);
+    t2 = (double)(tv2.tv_sec) + (double)(tv2.tv_usec)/ 1000000.00;
+    printf("\nO tempo de execucao de foi: %lf\n",(t2 - t1));
     fclose(fr);
     close(r);
 
