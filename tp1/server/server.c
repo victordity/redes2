@@ -107,7 +107,7 @@ int main(int argc, char *argv[])
     printf("\nO tempo de execucao de foi: %lf\n",(t2 - t1));
     fclose(fr);
     close(r);
-
+    return 0;
 }
     // Fecha a conexao e o arquivo
 	exit(EXIT_SUCCESS);

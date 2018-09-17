@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <sys/time.h>
 
 #include <sys/socket.h>
 #include <arpa/inet.h>
@@ -17,8 +18,9 @@ void logexit(const char *str)
 
 int main(int argc, char *argv[])
 {
-	char *host_do_servidor, *nome_arquivo;
-  int s, porto_do_servidor, len, i, tam_buffer, num_bytes = 0;
+    char *host_do_servidor, *nome_arquivo;
+    int s, porto_do_servidor, len, i, tam_buffer, num_bytes = 0;
+
 
     // Processa argumentos da linha de comando
 	host_do_servidor = argv[1];
